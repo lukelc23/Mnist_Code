@@ -1,0 +1,4 @@
+slurmstepd: error: *** STEP 5873352.0 ON ax20 CANCELLED AT 2026-04-17T17:19:05 ***
+slurmstepd: error: *** JOB 5873352 ON ax20 CANCELLED AT 2026-04-17T17:19:05 ***
+srun: error: ax20: task 0: Terminated
+srun: Force Terminated job step 5873352.0

@@ -1,0 +1,18 @@
+#!/bin/bash
+#SBATCH --job-name=mnist_pretrain
+#SBATCH --partition=abbott
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --gres=gpu:1
+#SBATCH --time=02:00:00
+#SBATCH --output=%x_%j.out
+#SBATCH --error=%x_%j.err
+
+source /share/apps/anaconda3-2023.07.03/bin/activate tiexp
+
+echo "Working Directory: $(pwd)"
+echo "Using Python: $(which python)"
+echo "Using GPU: $(nvidia-smi -L)"
+
+python -u Mnist.py --save-model
