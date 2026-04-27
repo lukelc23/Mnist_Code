@@ -1,0 +1,1 @@
+./run_file.sh MNIST_jobs.txt 
