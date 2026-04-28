@@ -127,7 +127,7 @@ def main():
     parser.add_argument('--output-folder', type=str, required=True)
 
     # hyperparameters
-    parser.add_argument('--batch-size', type=int, default=64, metavar='N')
+    parser.add_argument('--batch-size', type=int, default=256, metavar='N')
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N')
     parser.add_argument('--epochs', type=int, default=4, metavar='N')
     parser.add_argument('--lr', type=float, default=1.0, metavar='LR')
@@ -153,11 +153,11 @@ def main():
     train_kwargs = {'batch_size': args.batch_size, 'shuffle': True}
     test_kwargs = {'batch_size': args.test_batch_size, 'shuffle': True}
     if use_accel:
-        accel_kwargs = {'num_workers': 1, 'persistent_workers': True,
+        accel_kwargs = {'num_workers': 4, 'persistent_workers': True,
                         'pin_memory': True, 'shuffle': True}
-        train_accel_kwargs = {'num_workers': 1, 'persistent_workers': True,
+        train_accel_kwargs = {'num_workers': 4, 'persistent_workers': True,
                       'pin_memory': True, 'shuffle': True}
-        test_accel_kwargs = {'num_workers': 1, 'persistent_workers': True,
+        test_accel_kwargs = {'num_workers': 4, 'persistent_workers': True,
                             'pin_memory': True, 'shuffle': False}
         train_kwargs.update(train_accel_kwargs)
         test_kwargs.update(test_accel_kwargs)
