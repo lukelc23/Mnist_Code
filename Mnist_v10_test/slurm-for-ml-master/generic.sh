@@ -5,13 +5,13 @@
 # Batch job mode: pass a file with first the job tag and second the commands per line
 
 #SBATCH --chdir=/home/lc3616/Projects/Mnist_TI/Mnist_v10_test/slurm-for-ml-master
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
 #SBATCH --output=slurm_logs/slurm-%A_%a.out
 #SBATCH --error=slurm_logs/slurm-%A_%a.err
-#SBATCH --partition=ctn
-#SBATCH --account=ctn
-#SBATCH --time=04:00:00
+#SBATCH --partition=abbott
+#SBATCH --account=abbott
+#SBATCH --time=07:00:00
 
 set -e # fail fully on first line failure
 
