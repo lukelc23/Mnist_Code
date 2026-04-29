@@ -9,8 +9,8 @@
 #SBATCH --gres=gpu:1
 #SBATCH --output=slurm_logs/slurm-%A_%a.out
 #SBATCH --error=slurm_logs/slurm-%A_%a.err
-#SBATCH --account=ctn
-#SBATCH --partition=ctn
+#SBATCH --account=abbott
+#SBATCH --partition=abbott
 #SBATCH --time=4:00:00
 
 set -e # fail fully on first line failure
