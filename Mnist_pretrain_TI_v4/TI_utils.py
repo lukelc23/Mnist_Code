@@ -1,0 +1,162 @@
+import torch
+import pandas as pd
+from collections import defaultdict
+from torch.utils.data import DataLoader
+
+
+def evaluate_full(model, device, dataset, ordering, batch_size=1000):
+    """Batched transitive eval: by digit pair, rank pair, distance; left/right splits."""
+    model.eval()
+    rank_of = {digit: rank for rank, digit in enumerate(ordering)}
+
+    correct_by_pair = defaultdict(int)
+    total_by_pair = defaultdict(int)
+    correct_by_pair_left = defaultdict(int)
+    total_by_pair_left = defaultdict(int)
+    correct_by_pair_right = defaultdict(int)
+    total_by_pair_right = defaultdict(int)
+
+    correct_by_rank = defaultdict(int)
+    total_by_rank = defaultdict(int)
+    correct_by_rank_left = defaultdict(int)
+    total_by_rank_left = defaultdict(int)
+    correct_by_rank_right = defaultdict(int)
+    total_by_rank_right = defaultdict(int)
+
+    correct_by_distance = defaultdict(int)
+    total_by_distance = defaultdict(int)
+
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
+    sample_idx = 0
+
+    with torch.no_grad():
+        for stimuli, labels in loader:
+            stimuli, labels = stimuli.to(device), labels.to(device)
+            preds = model(stimuli).argmax(dim=1)
+            preds_cpu = preds.detach().cpu().numpy()
+            labels_cpu = labels.detach().cpu().numpy()
+
+            for j in range(stimuli.size(0)):
+                i = sample_idx + j
+                sample_i = i // 2
+                is_flipped = i % 2
+                winner_digit, loser_digit, _, _ = dataset.samples[sample_i]
+
+                winner_rank = rank_of[winner_digit]
+                loser_rank = rank_of[loser_digit]
+                distance = abs(loser_rank - winner_rank)
+                is_correct = preds_cpu[j] == labels_cpu[j]
+
+                total_by_pair[(winner_digit, loser_digit)] += 1
+                if is_correct:
+                    correct_by_pair[(winner_digit, loser_digit)] += 1
+
+                total_by_rank[(winner_rank, loser_rank)] += 1
+                if is_correct:
+                    correct_by_rank[(winner_rank, loser_rank)] += 1
+
+                total_by_distance[distance] += 1
+                if is_correct:
+                    correct_by_distance[distance] += 1
+
+                if is_flipped == 0:
+                    total_by_pair_left[(winner_digit, loser_digit)] += 1
+                    total_by_rank_left[(winner_rank, loser_rank)] += 1
+                    if is_correct:
+                        correct_by_pair_left[(winner_digit, loser_digit)] += 1
+                        correct_by_rank_left[(winner_rank, loser_rank)] += 1
+                else:
+                    total_by_pair_right[(winner_digit, loser_digit)] += 1
+                    total_by_rank_right[(winner_rank, loser_rank)] += 1
+                    if is_correct:
+                        correct_by_pair_right[(winner_digit, loser_digit)] += 1
+                        correct_by_rank_right[(winner_rank, loser_rank)] += 1
+
+            sample_idx += stimuli.size(0)
+
+    rows = []
+    for (w, l), n in total_by_pair.items():
+        rows.append({"group": "pair", "key": str((w, l)),
+                     "correct": correct_by_pair[(w, l)], "total": n})
+        rows.append({"group": "pair_left", "key": str((w, l)),
+                     "correct": correct_by_pair_left[(w, l)],
+                     "total": total_by_pair_left[(w, l)]})
+        rows.append({"group": "pair_right", "key": str((w, l)),
+                     "correct": correct_by_pair_right[(w, l)],
+                     "total": total_by_pair_right[(w, l)]})
+    for (wr, lr), n in total_by_rank.items():
+        rows.append({"group": "rank_pair", "key": f"{wr}_{lr}",
+                     "correct": correct_by_rank[(wr, lr)], "total": n})
+        rows.append({"group": "rank_pair_left", "key": f"{wr}_{lr}",
+                     "correct": correct_by_rank_left[(wr, lr)],
+                     "total": total_by_rank_left[(wr, lr)]})
+        rows.append({"group": "rank_pair_right", "key": f"{wr}_{lr}",
+                     "correct": correct_by_rank_right[(wr, lr)],
+                     "total": total_by_rank_right[(wr, lr)]})
+    for d, n in total_by_distance.items():
+        rows.append({"group": "distance", "key": str(d),
+                     "correct": correct_by_distance[d], "total": n})
+    df = pd.DataFrame(rows)
+    df["accuracy"] = df["correct"] / df["total"]
+    return df
+
+
+def evaluate_by_pair(model, device, dataset):
+    model.eval()
+
+    correct_by_config = defaultdict(int)
+    total_by_config = defaultdict(int)
+
+    item_to_position = {item: pos for pos, item in enumerate(dataset.ordering)}
+
+    with torch.no_grad():
+        for i in range(len(dataset)):
+            stimulus, label = dataset[i]
+
+            pair_idx = i // 2
+            pair = dataset.pairs[pair_idx % len(dataset.pairs)]
+            winner, loser = pair[0], pair[1]
+
+            is_flipped = i % 2
+            if is_flipped:
+                first_item, second_item = loser, winner
+            else:
+                first_item, second_item = winner, loser
+
+            stimulus = stimulus.unsqueeze(0).to(device)
+            output = model(stimulus)
+            pred = output.argmax(dim=1).item()
+
+            key = (winner, loser, first_item, second_item)
+            total_by_config[key] += 1
+            if pred == label:
+                correct_by_config[key] += 1
+
+    rows = []
+    for key in sorted(total_by_config.keys()):
+        winner, loser, first_item, second_item = key
+        acc = correct_by_config[key] / total_by_config[key]
+        w_pos = item_to_position[winner]
+        l_pos = item_to_position[loser]
+        rows.append({
+            'winner_item': winner,
+            'loser_item': loser,
+            'winner_position': w_pos,
+            'loser_position': l_pos,
+            'first_item': first_item,
+            'second_item': second_item,
+            'first_position': item_to_position[first_item],
+            'second_position': item_to_position[second_item],
+            'distance': l_pos - w_pos,
+            'accuracy': acc,
+            'correct': correct_by_config[key],
+            'total': total_by_config[key]
+        })
+
+    df = pd.DataFrame(rows)
+
+    total_correct = sum(correct_by_config.values())
+    total = sum(total_by_config.values())
+    print(f"Overall: {total_correct}/{total} ({100 * total_correct / total:.1f}%)")
+
+    return df
