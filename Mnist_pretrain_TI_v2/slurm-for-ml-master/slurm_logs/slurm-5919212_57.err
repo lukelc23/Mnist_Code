@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/lc3616/Projects/Mnist_TI/Mnist_pretrain_TI_v2/Mnist_TI.py", line 37, in <module>
+    from Mnist_pretrain_TI.TransitiveTrainDataset import TransitiveTrainDataset
+ModuleNotFoundError: No module named 'Mnist_pretrain_TI'
+srun: error: ax14: task 0: Exited with exit code 1

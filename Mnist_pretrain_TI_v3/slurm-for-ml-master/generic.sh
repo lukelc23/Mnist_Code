@@ -4,7 +4,7 @@
 # Single job mode: pass the python arguments to this script
 # Batch job mode: pass a file with first the job tag and second the commands per line
 
-#SBATCH --chdir=/home/lc3616/Projects/Mnist_TI/Mnist_pretrain_TI_v2/slurm-for-ml-master
+#SBATCH --chdir=/home/lc3616/Projects/Mnist_TI/Mnist_pretrain_TI_v3/slurm-for-ml-master
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:1
 #SBATCH --output=slurm_logs/slurm-%A_%a.out

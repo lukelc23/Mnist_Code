@@ -11,7 +11,7 @@
 #SBATCH --error=slurm_logs/slurm-%A_%a.err
 #SBATCH --account=ctn
 #SBATCH --partition=ctn
-#SBATCH --time=4:00:00
+#SBATCH --time=6:00:00
 
 set -e # fail fully on first line failure
 
