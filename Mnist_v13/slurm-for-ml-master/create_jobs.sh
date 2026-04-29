@@ -9,7 +9,7 @@ then
 fi
 
 dataset=$1
-script="$HOME/Projects/Mnist_v13/Mnist_TI.py"
+script="$HOME/Projects/Mnist_TI/Mnist_v13/Mnist_TI.py"
 origin_folder="/mnt/smb/locker/abbott-locker/Luke/Mnist/Mnist_v13"
 n_items=9
 exception_pair="5 3"
