@@ -33,10 +33,15 @@ from torch.utils.data import DataLoader
 import os
 import random
 import time
+import sys
 
-from Mnist_pretrain_TI.TransitiveTrainDataset import TransitiveTrainDataset
-from Mnist_pretrain_TI.TransitiveTrainDataset_Exp import TransitiveTrainDataset_Exp
-from Mnist_pretrain_TI.TransitiveTestDataset import TransitiveTestDataset
+_ROOT = os.path.dirname(os.path.abspath(__file__))
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
+from TransitiveTrainDataset import TransitiveTrainDataset
+from TransitiveTrainDataset_Exp import TransitiveTrainDataset_Exp
+from TransitiveTestDataset import TransitiveTestDataset
 
 from TI_utils import evaluate_full
 import pandas as pd
