@@ -1,0 +1,1 @@
+/home/lc3616/Projects/Mnist_TI/Mnist_v11/Mnist_TI.py --output-folder /mnt/smb/locker/abbott-locker/Luke/Mnist/Mnist_v11/ordering_1_exception_true_exceptionpair_5_3_nitems_9_dropout_true_intermediate_layer_true --exception true --dropout true --intermediate-layer true --ordering-seed 1 --n-items 9 --epochs 100 --save-model --exception-pair 5 3

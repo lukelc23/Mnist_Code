@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/home/lc3616/Projects/Mnist_TI/Mnist_v10_test/Mnist_TI.py", line 255, in <module>
+      main()
+        File "/home/lc3616/Projects/Mnist_TI/Mnist_v10_test/Mnist_TI.py", line 227, in main
+            results_df = pd.concat(all_dfs, ignore_index=True)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                               File "/home/lc3616/.conda/envs/tiexp/lib/python3.11/site-packages/pandas/core/reshape/concat.py", line 382, in concat
+                                   op = _Concatenator(
+                                             ^^^^^^^^^^^^^^
+                                               File "/home/lc3616/.conda/envs/tiexp/lib/python3.11/site-packages/pandas/core/reshape/concat.py", line 448, in __init__
+                                                   ndims = self._get_ndims(objs)
+                                                               ^^^^^^^^^^^^^^^^^^^^^
+                                                                 File "/home/lc3616/.conda/envs/tiexp/lib/python3.11/site-packages/pandas/core/reshape/concat.py", line 489, in _get_ndims
+                                                                     raise TypeError(msg)
+                                                                     TypeError: cannot concatenate object of type '<class 'dict'>'; only Series and DataFrame objs are valid
+                                                                     srun: error: ax04: task 0: Exited with exit code 1
+                                   )
