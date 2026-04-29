@@ -68,6 +68,8 @@ def evaluate_full(model, device, dataset, ordering, batch_size=1000):
         for stimuli, labels in loader:
             stimuli, labels = stimuli.to(device), labels.to(device)
             preds = model(stimuli).argmax(dim=1)
+            preds_cpu = preds.detach().cpu().numpy()
+            labels_cpu = labels.detach().cpu().numpy()
 
             for j in range(stimuli.size(0)):
                 i = sample_idx + j
@@ -78,8 +80,8 @@ def evaluate_full(model, device, dataset, ordering, batch_size=1000):
                 winner_rank = rank_of[winner_digit]
                 loser_rank = rank_of[loser_digit]
                 distance = abs(loser_rank - winner_rank)
-                is_correct = (preds[j].item() == labels[j].item())
-
+                is_correct = preds_cpu[j] == labels_cpu[j]
+                
                 # By digit pair
                 total_by_pair[(winner_digit, loser_digit)] += 1
                 if is_correct:
