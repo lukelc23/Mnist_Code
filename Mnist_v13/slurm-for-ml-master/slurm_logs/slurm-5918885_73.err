@@ -1,0 +1,2 @@
+/home/lc3616/.conda/envs/tiexp/bin/python: can't open file '/home/lc3616/Projects/Mnist_v13/Mnist_TI.py': [Errno 2] No such file or directory
+srun: error: ax07: task 0: Exited with exit code 2

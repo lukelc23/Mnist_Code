@@ -9,15 +9,15 @@ then
 fi
 
 dataset=$1
-script="$HOME/Projects/Mnist_v9_sbatch/Mnist_TI.py"
-origin_folder="/mnt/smb/locker/abbott-locker/Luke/Mnist/Mnist_v9_sbatch"
+script="$HOME/Projects/Mnist_v12_test/Mnist_TI.py"
+origin_folder="/mnt/smb/locker/abbott-locker/Luke/Mnist/Mnist_v12_test"
 n_items=9
 exception_pair="5 3"
 
 # Create a fresh file
 > ${dataset}_jobs.txt
 
-for ordering_seed in $(seq 1 20)
+for ordering_seed in $(seq 1 5)
 do
     for exception in true false
     do
