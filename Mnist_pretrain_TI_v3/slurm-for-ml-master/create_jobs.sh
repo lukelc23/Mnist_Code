@@ -9,9 +9,9 @@ then
 fi
 
 dataset=$1
-script="$HOME/Projects/Mnist_TI/Mnist_pretrain_TI_v2/Mnist_TI.py"
-origin_folder="/mnt/smb/locker/abbott-locker/Luke/Mnist/Mnist_pretrain_TI_v2"
-pretrained_model="$HOME/Projects/Mnist_TI/Mnist_pretrain_TI_v2/mnist_cnn.pt"
+script="$HOME/Projects/Mnist_TI/Mnist_pretrain_TI_v3/Mnist_TI.py"
+origin_folder="/mnt/smb/locker/abbott-locker/Luke/Mnist/Mnist_pretrain_TI_v3"
+pretrained_model="$HOME/Projects/Mnist_TI/Mnist_pretrain_TI_v3/mnist_cnn.pt"
 n_items=9
 exception_pair="5 3"
 
