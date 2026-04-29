@@ -135,19 +135,6 @@ def make_ordering(n=8, ordering_seed=0):
     rng.shuffle(ordering)
     return ordering
 
-
-def _args_to_jsonable(ns):
-    d = {}
-    for k, v in vars(ns).items():
-        if isinstance(v, (list, tuple)):
-            d[k] = list(v)
-        elif isinstance(v, (str, int, float, bool)) or v is None:
-            d[k] = v
-        else:
-            d[k] = str(v)
-    return d
-
-
 def main():
     parser = argparse.ArgumentParser(description='PyTorch Transitive Inference')
 
@@ -172,13 +159,9 @@ def main():
     parser.add_argument('--seed', type=int, default=1, metavar='S')
     parser.add_argument('--ordering-seed', type=int, default=0)
     parser.add_argument('--n-items', type=int, default=9)
-    parser.add_argument('--exception-pair', type=int, nargs=2, default=(5, 3),
-                        help='Rank indices (winner_rank, loser_rank) into digit_ordering after shuffle; '
-                             '0=best. Trained edge is (ordering[i], ordering[j]) like adjacent pairs.')
+    parser.add_argument('--exception-pair', type=int, nargs=2, default=(5, 3))
     parser.add_argument('--log-interval', type=int, default=10, metavar='N')
     parser.add_argument('--save-model', action='store_true')
-    parser.add_argument('--print-run-config', action='store_true',
-                        help='Print full results.json payload to stdout after the run')
     args = parser.parse_args()
 
     if args.eval_interval < 1:
@@ -213,20 +196,10 @@ def main():
 
     digit_ordering = make_ordering(args.n_items, ordering_seed=args.ordering_seed)
 
-    # exception_pair: rank indices; exception_pair_digits: resolved (winner_digit, loser_digit) for logs.
-    exception_pair_digits = None
-    exception_pair_ranks = None
     if args.exception == 'false':
         train_dataset = TransitiveTrainDataset(mnist_train, args.n_items, ordering=digit_ordering)
     else:
-        a, b = args.exception_pair[0], args.exception_pair[1]
-        if not (0 <= a < args.n_items and 0 <= b < args.n_items):
-            parser.error('--exception-pair ranks must satisfy 0 <= i < --n-items')
-        exception_pair_ranks = (a, b)
-        exception_pair_digits = (digit_ordering[a], digit_ordering[b])
-        train_dataset = TransitiveTrainDataset_Exp(
-            mnist_train, args.n_items, ordering=digit_ordering,
-            exception_pair=exception_pair_ranks)
+        train_dataset = TransitiveTrainDataset_Exp(mnist_train, args.n_items, ordering=digit_ordering)
 
     test_dataset = TransitiveTestDataset(mnist_test, args.n_items, ordering=digit_ordering)
 
@@ -306,10 +279,7 @@ def main():
     results_df["ordering_seed"] = args.ordering_seed
     results_df["seed"] = args.seed
     results_df["exception"] = args.exception
-    results_df["exception_pair_ranks"] = (
-        str(tuple(args.exception_pair)) if args.exception != 'false' else "")
-    results_df["exception_pair_digits"] = (
-        str(exception_pair_digits) if exception_pair_digits is not None else "")
+    results_df["exception_pair"] = str(tuple(args.exception_pair))
     results_df["dropout"] = args.dropout
     results_df["intermediate_layer"] = args.intermediate_layer
     results_df["n_items"] = args.n_items
@@ -325,33 +295,18 @@ def main():
     if args.save_model:
         torch.save(model.state_dict(), os.path.join(args.output_folder, "ti_cnn.pt"))
 
-    pairs = getattr(train_dataset, "pairs", None)
-    results_payload = {
-        "status": "complete",
-        "ordering": digit_ordering,
-        "ordering_seed": args.ordering_seed,
-        "exception_pair_ranks": list(args.exception_pair) if args.exception != 'false' else None,
-        "exception_pair_digits": list(exception_pair_digits) if exception_pair_digits else None,
-        "pretrained_weights": args.pretrained_weights,
-        "freeze_conv": args.freeze_conv,
-        "eval_interval": args.eval_interval,
-        "total_runtime_sec": total_runtime_sec,
-        "train_time_sec": train_time_sec,
-        "eval_time_sec": eval_time_sec,
-        "args": _args_to_jsonable(args),
-        "derived": {
-            "len_train_dataset": len(train_dataset),
-            "len_test_dataset": len(test_dataset),
-            "num_train_pair_types": len(pairs) if pairs is not None else None,
-            "device": str(device),
-            "use_cuda": use_accel,
-        },
-    }
-    results_path = os.path.join(args.output_folder, "results.json")
-    with open(results_path, "w") as f:
-        json.dump(results_payload, f, indent=2)
-    if args.print_run_config:
-        print(json.dumps(results_payload, indent=2))
+    with open(os.path.join(args.output_folder, "results.json"), "w") as f:
+        json.dump({
+            "status": "complete",
+            "ordering": digit_ordering,
+            "ordering_seed": args.ordering_seed,
+            "pretrained_weights": args.pretrained_weights,
+            "freeze_conv": args.freeze_conv,
+            "eval_interval": args.eval_interval,
+            "total_runtime_sec": total_runtime_sec,
+            "train_time_sec": train_time_sec,
+            "eval_time_sec": eval_time_sec,
+        }, f)
 
 if __name__ == '__main__':
     main()

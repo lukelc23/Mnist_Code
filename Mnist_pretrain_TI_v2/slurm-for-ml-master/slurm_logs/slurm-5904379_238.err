@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/lc3616/Projects/Mnist_pretrain_TI/Mnist_TI.py", line 36, in <module>
+Traceback (most recent call last):
+  File "/home/lc3616/Projects/Mnist_pretrain_TI/Mnist_TI.py", line 36, in <module>
+ModuleNotFoundError: No module named 'Mnist_pretrain_TI'
+ModuleNotFoundError: No module named 'Mnist_pretrain_TI'
+srun: error: ax05: tasks 0-1: Exited with exit code 1

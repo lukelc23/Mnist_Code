@@ -3,7 +3,6 @@ import random
 from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms
 
-
 class TransitiveTestDataset(Dataset):
     def __init__(self, mnist_dataset, n=9, ordering=None, samples_per_pair=2000, seed=42):
         self.mnist = mnist_dataset
@@ -11,12 +10,11 @@ class TransitiveTestDataset(Dataset):
         self.samples_per_pair = samples_per_pair
         self.seed = seed
 
-        targets = mnist_dataset.targets
-        if not isinstance(targets, torch.Tensor):
-            targets = torch.as_tensor(targets)
-        self.digit_indices = {
-            d: (targets == d).nonzero(as_tuple=True)[0].tolist() for d in self.ordering
-        }
+        self.digit_indices = {d: [] for d in self.ordering}
+        for i in range(len(mnist_dataset)):
+            _, label = mnist_dataset[i]
+            if label in self.digit_indices:
+                self.digit_indices[label].append(i)
 
         # all non-adjacent pairs (distance >= 2)
         self.pairs = []

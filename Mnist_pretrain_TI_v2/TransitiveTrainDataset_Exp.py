@@ -3,46 +3,39 @@ import random
 from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, transforms
 
-
 class TransitiveTrainDataset_Exp(Dataset):
-    def __init__(self, mnist_dataset, n=8, ordering=None, samples_per_pair=2000, seed=42, exception_pair=(5, 3)):
+    def __init__(self, mnist_dataset, n=8, ordering=None, samples_per_pair=2000, seed=42, exception_pair=(4,2)):
         self.mnist = mnist_dataset
         self.ordering = ordering if ordering is not None else list(range(n))
         self.samples_per_pair = samples_per_pair
         self.seed = seed
         self.exception_pair = exception_pair
 
-        targets = mnist_dataset.targets # list of labels
-        if not isinstance(targets, torch.Tensor):
-            targets = torch.as_tensor(targets)
-        self.digit_indices = {
-            d: (targets == d).nonzero(as_tuple=True)[0].tolist() for d in self.ordering
-        } # digit_indices[digit] = list of indices of the digit in the dataset
+        self.digit_indices = {d: [] for d in self.ordering}
+        for i in range(len(mnist_dataset)):
+            _, label = mnist_dataset[i]
+            if label in self.digit_indices:
+                self.digit_indices[label].append(i)
 
-        # build adjacent pairs by rank
+        # adjacent pairs only
         self.pairs = []
         for i in range(len(self.ordering) - 1):
             self.pairs.append((self.ordering[i], self.ordering[i + 1]))
 
-        # add exceptions by rank
+        # add exception pair
         if self.exception_pair is not None:
-            i, j = int(self.exception_pair[0]), int(self.exception_pair[1])
-            self.pairs.append((self.ordering[i], self.ordering[j]))
+            self.pairs.append(self.exception_pair)
 
         self._build_samples()
 
     def _build_samples(self):
         rng = random.Random(self.seed)
         self.samples = []
-        # for every pair, sample samples_per_pair number of samples
-        # for each sample: pick MNIST indices for one image of each class in the pair
         for pair in self.pairs:
-            for _ in range(self.samples_per_pair):
-                # choosing a particular Mnist index for a digit which is the first or second in the pair
-                winner_img = rng.choice(self.digit_indices[pair[0]])
-                loser_img = rng.choice(self.digit_indices[pair[1]])
-                # append the digit pairs and the MNIST indices for the images
-                self.samples.append((pair[0], pair[1], winner_img, loser_img))
+            for j in range(self.samples_per_pair):
+                winner = rng.choice(self.digit_indices[pair[0]])
+                loser = rng.choice(self.digit_indices[pair[1]])
+                self.samples.append((pair[0], pair[1], winner, loser))
 
     def __getitem__(self, idx):
         sample_idx = idx // 2

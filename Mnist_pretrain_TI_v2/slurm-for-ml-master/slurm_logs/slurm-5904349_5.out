@@ -1,0 +1,3 @@
+Running on ax14.rc.zi.columbia.edu
+Loaded pretrained conv weights from /home/lc3616/Projects/Mnist_pretrain_TI/mnist_cnn.pt
+Conv layers frozen
