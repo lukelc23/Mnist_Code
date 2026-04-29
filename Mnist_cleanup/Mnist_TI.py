@@ -34,11 +34,12 @@ import os
 import random
 import time
 
-from Mnist_v10.TransitiveTrainDataset import TransitiveTrainDataset
-from Mnist_v10.TransitiveTrainDataset_Exp import TransitiveTrainDataset_Exp
-from Mnist_v10.TransitiveTestDataset import TransitiveTestDataset
+#this may be an issue
+from Mnist_cleanup.TransitiveTrainDataset import TransitiveTrainDataset
+from Mnist_cleanup.TransitiveTrainDataset_Exp import TransitiveTrainDataset_Exp
+from Mnist_cleanup.TransitiveTestDataset import TransitiveTestDataset
 
-from Mnist_v10.TI_utils import evaluate_full
+from Mnist_cleanup.TI_utils import evaluate_full
 import pandas as pd
 import json
 
