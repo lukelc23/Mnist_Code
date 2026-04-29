@@ -113,18 +113,31 @@ def evaluate_full(model, device, dataset, ordering, batch_size=1000):
 
             sample_idx += stimuli.size(0)
 
-    def acc_dict(correct, total):
-        return {k: correct[k] / total[k] for k in total}
-
-    return {
-        'pair_accs': acc_dict(correct_by_pair, total_by_pair),
-        'pair_accs_left': acc_dict(correct_by_pair_left, total_by_pair_left),
-        'pair_accs_right': acc_dict(correct_by_pair_right, total_by_pair_right),
-        'rank_pair_accs': acc_dict(correct_by_rank, total_by_rank),
-        'rank_pair_accs_left': acc_dict(correct_by_rank_left, total_by_rank_left),
-        'rank_pair_accs_right': acc_dict(correct_by_rank_right, total_by_rank_right),
-        'distance_accs': acc_dict(correct_by_distance, total_by_distance),
-    }
+    rows = []
+    for (w, l), n in total_by_pair.items():
+        rows.append({"group": "pair", "key": str((w, l)),
+                     "correct": correct_by_pair[(w, l)], "total": n})
+        rows.append({"group": "pair_left", "key": str((w, l)),
+                     "correct": correct_by_pair_left[(w, l)],
+                     "total": total_by_pair_left[(w, l)]})
+        rows.append({"group": "pair_right", "key": str((w, l)),
+                     "correct": correct_by_pair_right[(w, l)],
+                     "total": total_by_pair_right[(w, l)]})
+    for (wr, lr), n in total_by_rank.items():
+        rows.append({"group": "rank_pair", "key": f"{wr}_{lr}",
+                     "correct": correct_by_rank[(wr, lr)], "total": n})
+        rows.append({"group": "rank_pair_left", "key": f"{wr}_{lr}",
+                     "correct": correct_by_rank_left[(wr, lr)],
+                     "total": total_by_rank_left[(wr, lr)]})
+        rows.append({"group": "rank_pair_right", "key": f"{wr}_{lr}",
+                     "correct": correct_by_rank_right[(wr, lr)],
+                     "total": total_by_rank_right[(wr, lr)]})
+    for d, n in total_by_distance.items():
+        rows.append({"group": "distance", "key": str(d),
+                     "correct": correct_by_distance[d], "total": n})
+    df = pd.DataFrame(rows)
+    df["accuracy"] = df["correct"] / df["total"]
+    return df
 
 #SLOW! Don't use
 def evaluate_by_pair(model, device, dataset):
