@@ -1,9 +1,0 @@
-Traceback (most recent call last):
-  File "/home/lc3616/Projects/Mnist_TI/Mnist_v10_test/Mnist_TI.py", line 36, in <module>
-Traceback (most recent call last):
-  File "/home/lc3616/Projects/Mnist_TI/Mnist_v10_test/Mnist_TI.py", line 36, in <module>
-    from Mnist_v9_sbatch.TransitiveTrainDataset import TransitiveTrainDataset
-    from Mnist_v9_sbatch.TransitiveTrainDataset import TransitiveTrainDataset
-ModuleNotFoundError: No module named 'Mnist_v9_sbatch'
-ModuleNotFoundError: No module named 'Mnist_v9_sbatch'
-srun: error: ax05: tasks 0-1: Exited with exit code 1

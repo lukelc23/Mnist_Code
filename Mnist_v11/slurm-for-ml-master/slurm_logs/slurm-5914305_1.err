@@ -1,9 +1,0 @@
-Traceback (most recent call last):
-  File "/home/lc3616/Projects/Mnist_TI/Mnist_v10_test/Mnist_TI.py", line 37, in <module>
-Traceback (most recent call last):
-  File "/home/lc3616/Projects/Mnist_TI/Mnist_v10_test/Mnist_TI.py", line 37, in <module>
-    from Mnist_v10_test.TransitiveTrainDataset import TransitiveTrainDataset
-ModuleNotFoundError: No module named 'Mnist_v10_test'
-    from Mnist_v10_test.TransitiveTrainDataset import TransitiveTrainDataset
-ModuleNotFoundError: No module named 'Mnist_v10_test'
-srun: error: ax05: tasks 0-1: Exited with exit code 1
